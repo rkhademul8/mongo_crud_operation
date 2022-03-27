@@ -29,7 +29,7 @@ async function run() {
     app.get('/users',async(req,res)=>{
       const cursor=userCollection.find({})
       const users= await cursor.toArray()
-      res.send(users)
+      res.send(users) 
     })
 
     // single user get
@@ -48,6 +48,23 @@ async function run() {
       console.log("got new user",req.body);
       // res.send('hit the post')
       console.log("Added user",result);
+      res.json(result)
+    })
+
+    // update API
+    app.put('/users/:id',async(req,res)=>{
+      const id=req.params.id
+      const updatedUser=req.body
+      const filter={_id:ObjectId(id)}
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          name:updatedUser.name,
+          email:updatedUser.email
+        },
+      };
+      const result=await userCollection.updateOne(filter,updateDoc,options)
+      console.log('updated user id',id);
       res.json(result)
     })
 
